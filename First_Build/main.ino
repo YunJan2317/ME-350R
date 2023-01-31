@@ -3,6 +3,7 @@
     by Dejan Nedelkovski, www.HowToMechatronics.com
 */
 
+// DEFINE PORT NUMBERS //////////////////////////////////////////////
 #define enA 9
 #define in1 4
 #define in2 5
@@ -10,9 +11,11 @@
 #define in3 6
 #define in4 7
 
+// DEFINE GLOBAL VARIABLES //////////////////////////////////////////
 int motorSpeedA = 0;
 int motorSpeedB = 0;
 
+// SETUP PORTS UPON STARTUP /////////////////////////////////////////
 void setup() {
   pinMode(enA, OUTPUT);
   pinMode(enB, OUTPUT);
@@ -22,9 +25,17 @@ void setup() {
   pinMode(in4, OUTPUT);
 }
 
+// MAIN LOOP ////////////////////////////////////////////////////////
 void loop() {
+    moveStraight(128, 1000);
+    stop(1000);
+
+    moveStraight(-128, 1000);
+    stop(1000);
+/*
   int xAxis = analogRead(A0); // Read Joysticks X-axis
   int yAxis = analogRead(A1); // Read Joysticks Y-axis
+
 
   // Y-axis used for forward and backward control
   if (yAxis < 470) {
@@ -93,4 +104,92 @@ void loop() {
   }
   analogWrite(enA, motorSpeedA); // Send PWM signal to motor A
   analogWrite(enB, motorSpeedB); // Send PWM signal to motor B
+  */
+}
+
+// HELPER FUNCTIONS /////////////////////////////////////////////////
+
+void stop(float time){
+    // Motor A 
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, LOW);
+    analogWrite(enA, 0);
+
+    // Motor B
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, LOW);
+    analogWrite(enB, 0);
+    
+    // delay
+    delay(time);
+}
+
+
+void moveStraight(float velocity, float time){
+    // Move Forward
+    if (velocity > 0){
+        // Motor A 
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+        analogWrite(enA, abs(velocity));
+
+        // Motor B
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+        analogWrite(enB, abs(velocity));
+    } // end if
+
+    // Move Backward (Reverse)
+    else if (velocity < 0){
+        // Motor A 
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        analogWrite(enA, abs(velocity));
+
+        // Motor B
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        analogWrite(enB, abs(velocity));
+    } // end else if
+
+    // Wait for time then stop
+    delay(time);
+    stop();
+}
+
+void spotTurn(float velocity, float bearing, float time){
+    // Turn right
+    if (bearing > 0){
+        // Motor A 
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+        analogWrite(enA, abs(velocity));
+
+        // Motor B
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH);
+        analogWrite(enB, abs(velocity));
+
+        // Stop after time is up
+        delay(time);
+        stop();
+    } // end if
+
+    // Turn left
+    if (bearing < 0){
+        // Motor A 
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        analogWrite(enA, abs(velocity));
+
+        // Motor B
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+        analogWrite(enB, abs(velocity));
+
+        // Stop after time is up
+        delay(time);
+        stop();
+    } // end if
+    
 }
