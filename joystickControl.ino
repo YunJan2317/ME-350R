@@ -31,7 +31,6 @@ void wheelControl(int rightVelocity, int leftVelocity) {
   analogWrite(enB, leftSpeed);
 }
 
-
 int sign(int x) {
     return (x > 0) - (x < 0);
 }
@@ -48,12 +47,16 @@ void setup() {
   pinMode(in4, OUTPUT);
 }
 
+
 void loop() {
   xAxis = analogRead(A0)/2 - 255; // Read Joysticks X-axis.
   yAxis = analogRead(A1)/2 - 255; // Read Joysticks Y-axis.
 
   rightVelocity = (abs(yAxis - xAxis) < 255) ? yAxis - xAxis : sign(yMapped - xAxis)*255;
   leftVelocity = (abs(yAxis + xAxis) < 255) ? yAxis + xAxis : sign(yMapped + xAxis)*255;
+
+  rightVelocity = abs(rightVelocity) < 16 ? 0 : rightVelocity;
+  leftVelocity = abs(leftVelocity) < 16 ? 0 : leftVelocity;
 
   Serial.println(rightVelocity);
   Serial.println(leftVelocity);
